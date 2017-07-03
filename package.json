@@ -1,0 +1,14 @@
+{
+  "name": "task-master",
+  "version": "1.0.0",
+  "description": "A Task master app with user can assign a task to single/multiple users and chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ryuzaki644",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
