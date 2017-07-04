@@ -2,19 +2,44 @@
   "name": "task-master",
   "version": "1.0.0",
   "description": "A Task master app with user can assign a task to single/multiple users and chat",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server",
+    "dev": "webpack-dev-server --inline --hot --history-api-fallback --content-base ./public",
+    "build": "webpack",
+    "watch": "webpack -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "babel": {
+  "presets": [
+    "env",
+    "react"
+  ]
+},
   "author": "ryuzaki644",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.16.2",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
-    "ejs": "~2.5.6",
     "express": "~4.15.2",
-    "morgan": "~1.8.1",
+    "prop-types": "^15.5.10",
+    "query-string": "^4.3.4",
+    "react": "^15.6.0",
+    "react-dom": "^15.6.0",
+    "react-router-dom": "^4.1.1",
     "serve-favicon": "~2.4.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.4",
+    "html-webpack-plugin": "^2.28.0",
+    "style-loader": "^0.18.2",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
   }
 }
