@@ -4,4 +4,4 @@ require('./index.css')
 
 const App = require('./components/App.js')
 
-ReactDOM.render(<App name='sara' />, document.getElementById('app'))
+ReactDOM.render(<App />, document.getElementById('app'))

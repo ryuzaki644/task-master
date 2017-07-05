@@ -1,0 +1,14 @@
+[
+  {
+  "id": 1,
+  "todo": "render a todo using axios"
+  },
+  {
+    "id": 2,
+    "todo": "Make form field and send request"
+    },
+    {
+      "id": 3,
+      "todo": "Send only a selected todo"
+    }
+]
