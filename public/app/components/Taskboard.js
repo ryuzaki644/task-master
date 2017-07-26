@@ -1,5 +1,6 @@
 const React = require('react')
 const {getTasks} = require('../actions/taskboardAction')
+const parseQuery = require('query-string').parse
 
 const mapColumnData = taskName => taskName.map(
   task => {
@@ -11,61 +12,153 @@ const mapColumnData = taskName => taskName.map(
   }
 )
 
-const Tasks = (props) => {
-  const tasks = props.tasks
-  console.log(props.tasks)
-  return (
-    <div>
-      <table>
+class AddTaskHead extends React.Component {
+  constructor (props) {
+    super(props)
 
-        <thead>
-          <tr>
-            <th>
-              {props.head}
-              <div className='addTask'>
-                <input />
-                <button className='button' >Add me</button>
-              </div>
-            </th>
-          </tr>
-        </thead>
+    this.state = {
+      taskHead: ''
+    }
 
-        <tbody>
-          {mapColumnData(tasks)}
-        </tbody>
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleInputSubmit = this.handleInputSubmit.bind(this)
+  }
 
-      </table>
-    </div>
-  )
+  handleInputChange (event) {
+    event.preventDefault()
+    this.setState({'taskHead': event.target.value})
+  }
+
+  handleInputSubmit (event) {
+    event.preventDefault()
+    const taskTable = {taskHead: this.state.taskHead, taskContent: []}
+    this.props.addTaskHead(taskTable)
+  }
+
+  render () {
+    return (
+      <div>
+        <form onSubmit={this.handleInputSubmit}>
+          <div className='addForm'>
+            <input type='text' onChange={this.handleInputChange} value={this.state.taskHead} />
+            <button className='button' type='submit' >Add Column</button>
+          </div>
+        </form>
+      </div>
+    )
+  }
+}
+
+class Tasks extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      task: ''
+    }
+
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  handleChange (event) {
+    event.preventDefault()
+    const value = event.target.value
+    this.setState({task: value})
+  }
+
+  handleSubmit (event) {
+    event.preventDefault()
+    const head = this.props.head
+    const taskContent = this.props.tasks.concat(this.state.task)
+    this.props.onSubmit(head, taskContent)
+  }
+
+  render () {
+    const tasks = this.props.tasks
+    return (
+      <div className='taskTable'>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                {this.props.head}
+                <form onSubmit={this.handleSubmit}>
+                  <div className='addForm'>
+                    <input value={this.state.todo} onChange={this.handleChange} />
+                    <button type='submit' className='button' >Add me</button>
+                  </div>
+                </form>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {mapColumnData(tasks)}
+          </tbody>
+
+        </table>
+      </div>
+    )
+  }
 }
 
 class Taskboard extends React.Component {
   constructor (props) {
     super(props)
 
+    const [boardId] = Object.keys(parseQuery(this.props.location.search))
+
     this.state = {
-      tasks: {}
+      id: boardId
     }
+    this.onSubmit = this.onSubmit.bind(this)
+    this.addTaskHead = this.addTaskHead.bind(this)
   }
 
   componentDidMount () {
-    getTasks
+    getTasks(this.state.id)
       .then(res => {
+        console.log(res)
         const tasks = res.data
         this.setState(tasks)
       })
       .catch(err => { console.error(err) })
   }
 
+  addTaskHead (taskTable) {
+    this.setState({taskTables: this.state.taskTables.concat(taskTable)})
+  }
+
+  onSubmit (taskHead, taskContent) {
+    const taskTables = this.state.taskTables.map(task => {
+      if (task.taskHead === taskHead) {
+        return {
+          taskHead, taskContent
+        }
+      }
+      return task
+    })
+    this.setState({taskTables})
+  }
+
   render () {
-    const tasks = this.state.tasks
-    const taskHeads = Object.keys(tasks)
-    return taskHeads.length === 0 ? (<p> loading </p>) : (
-      <div className='tableContainer'>
-        {taskHeads.map((head) => {
-          console.log(tasks + 'in lanldn')
-          return <Tasks key={head} head={head} tasks={this.state.tasks[head]} />
-        })}
+    const taskTables = this.state.taskTables
+    return (
+      <div>
+        <h1>{this.state.board}</h1>
+        <div className='addTaskHead'>
+          <AddTaskHead addTaskHead={this.addTaskHead} />
+          {taskTables !== undefined && taskTables.length === 0 && <h1>Add taskHead</h1>}
+        </div>
+        <div className='tables'>
+          <div className='tableContainer'>
+            {taskTables !== undefined && taskTables.map(table => {
+              const taskHead = table.taskHead
+              return <Tasks key={taskHead} head={taskHead} tasks={table.taskContent} onSubmit={this.onSubmit} />
+            })}
+          </div>
+        </div>
       </div>
     )
   }
